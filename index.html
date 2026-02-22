@@ -273,7 +273,7 @@ async function loadFull(title,box){
  const d=await r.json();
  const text=Object.values(d.query.pages)[0].extract;
  const summary=text.split(".").slice(0,5).join(".")+".";
- box.querySelector("p").textContent="TL;DR:\n"+summary+"\n\n"+text;
+ box.querySelector("p").textContent="AI Summary:\n"+summary+"\n\n"+text;
  box.querySelector(".badge").textContent="AI Summary + Full";
 }
 
@@ -323,3 +323,4 @@ for(let i=0;i<80;i++)
 </body>
 
 </html>
+
