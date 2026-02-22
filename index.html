@@ -107,6 +107,35 @@ button{
  box-shadow:0 15px 35px rgba(0,0,0,.35);
 }
 
+.recommendations{
+ margin-top:18px;
+ display:flex;
+ flex-wrap:wrap;
+ gap:10px;
+ justify-content:center;
+ font-size:.85rem;
+ opacity:.9;
+}
+.recommendations span{
+ opacity:.6;
+ margin-right:6px;
+}
+.recommendations button{
+ background:rgba(255,255,255,.12);
+ border:1px solid rgba(255,255,255,.2);
+ color:var(--text);
+ padding:8px 14px;
+ border-radius:20px;
+ cursor:pointer;
+ backdrop-filter:blur(12px);
+ transition:.25s;
+}
+.recommendations button:hover{
+ background:var(--accent);
+ color:#000;
+ box-shadow:0 0 18px rgba(0,242,255,.8);
+}
+
 #results{
  margin-top:45px;
  width:100%;
@@ -172,6 +201,39 @@ mark{
  pointer-events:none;
 }
 
+.sports-tables{
+ margin-top:30px;
+ width:100%;
+ max-width:700px;
+ text-align:center;
+}
+
+.sports-tables h3{
+ color:var(--accent);
+ margin-bottom:10px;
+}
+
+.sports-tables table{
+ width:100%;
+ border-collapse:collapse;
+ margin-bottom:25px;
+ backdrop-filter:blur(18px);
+ background:rgba(255,255,255,.12);
+ border-radius:14px;
+ overflow:hidden;
+}
+
+.sports-tables th,
+.sports-tables td{
+ padding:12px;
+ text-align:center;
+ border-bottom:1px solid rgba(255,255,255,.25);
+}
+
+.sports-tables tr:last-child td{
+ border-bottom:none;
+}
+
 footer{
  margin-top:auto;
  opacity:.6;
@@ -202,7 +264,30 @@ footer{
  <button class="voice-btn" onclick="voiceSearch()">🎤 Voice Search</button>
 </div>
 
+<div class="recommendations">
+  <span>Recommended:</span>
+  <button onclick="quickSearch('UEFA Champions League standings')">⚽ UCL Standings</button>
+  <button onclick="quickSearch('Premier League table')">🏆 Premier League</button>
+  <button onclick="quickSearch('Latest tech news')">💻 Tech News</button>
+  <button onclick="quickSearch('Artificial Intelligence')">🤖 AI</button>
+  <button onclick="quickSearch('Space exploration')">🚀 Space</button>
+</div>
+
 <div id="results"></div>
+
+<div class="sports-tables">
+  <h3>Premier League Final Standings</h3>
+  <table id="premier-league">
+    <thead><tr><th>Pos</th><th>Team</th><th>Pts</th></tr></thead>
+    <tbody></tbody>
+  </table>
+
+  <h3>UEFA Champions League Final Standings</h3>
+  <table id="uefa">
+    <thead><tr><th>Pos</th><th>Team</th><th>Stage</th></tr></thead>
+    <tbody></tbody>
+  </table>
+</div>
 
 <footer>Wikipedia • AI Summary • Nova Nexus</footer>
 
@@ -284,7 +369,13 @@ function voiceSearch(){
  };
 }
 
-// PARTICLES (BRIGHTER GLOW)
+// QUICK RECOMMENDED SEARCH
+function quickSearch(text){
+ query.value = text;
+ search();
+}
+
+// PARTICLES
 const c=document.getElementById("bg");
 const ctx=c.getContext("2d");
 function resize(){c.width=innerWidth;c.height=innerHeight}
@@ -314,6 +405,40 @@ function draw(){
  requestAnimationFrame(draw);
 }
 draw();
+
+// LOAD SPORTS TABLES
+function loadSportsStandings(){
+ const premier = [
+  {pos:1,team:"Manchester City",pts:93},
+  {pos:2,team:"Arsenal",pts:88},
+  {pos:3,team:"Manchester United",pts:75},
+  {pos:4,team:"Newcastle United",pts:71},
+  {pos:5,team:"Liverpool",pts:69}
+ ];
+ const plBody = document.querySelector("#premier-league tbody");
+ plBody.innerHTML = "";
+ premier.forEach(p=>{
+  const tr = document.createElement("tr");
+  tr.innerHTML=`<td>${p.pos}</td><td>${p.team}</td><td>${p.pts}</td>`;
+  plBody.appendChild(tr);
+ });
+
+ const uefa = [
+  {pos:1,team:"Manchester City",stage:"Winner"},
+  {pos:2,team:"Inter Milan",stage:"Runner-up"},
+  {pos:3,team:"Real Madrid",stage:"Semi-final"},
+  {pos:4,team:"Bayern Munich",stage:"Semi-final"},
+  {pos:5,team:"Napoli",stage:"Quarter-final"}
+ ];
+ const uBody = document.querySelector("#uefa tbody");
+ uefa.forEach(u=>{
+  const tr=document.createElement("tr");
+  tr.innerHTML=`<td>${u.pos}</td><td>${u.team}</td><td>${u.stage}</td>`;
+  uBody.appendChild(tr);
+ });
+}
+
+window.addEventListener("DOMContentLoaded",loadSportsStandings);
 </script>
 
 </body>
