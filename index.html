@@ -4,180 +4,146 @@
 <meta charset="UTF-8">
 <title>Nova Nexus</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <style>
 :root{
- --accent:#00f2ff;
+ --accent:#00ffd5;
+ --accent2:#6c8cff;
  --glass:rgba(255,255,255,.14);
  --text:#fff;
- --bg1:#0f2027;--bg2:#203a43;--bg3:#2c5364;
+ --bg1:#0b132b;
+ --bg2:#1c2541;
+ --bg3:#3a506b;
 }
+
 .light{
  --accent:#005eff;
+ --accent2:#00c2ff;
  --glass:rgba(255,255,255,.85);
  --text:#111;
- --bg1:#f5f7fa;--bg2:#e4e7eb;--bg3:#d0d5dd;
+ --bg1:#f5f7fa;
+ --bg2:#e4e7eb;
+ --bg3:#d0d5dd;
 }
-*{box-sizing:border-box;font-family:Inter,Segoe UI,sans-serif}
+
+*{ box-sizing:border-box; font-family:Inter,Segoe UI,sans-serif; }
 
 body{
  margin:0; min-height:100vh;
  background:linear-gradient(135deg,var(--bg1),var(--bg2),var(--bg3));
  color:var(--text);
  display:flex; flex-direction:column; align-items:center;
- padding:30px; transition:.4s; overflow-x:hidden;
+ padding:30px; overflow-x:hidden;
+ transition:.4s;
 }
 
-canvas{position:fixed; inset:0; z-index:0; pointer-events:none}
+canvas{ position:fixed; inset:0; z-index:0; pointer-events:none; }
 
 header{
  width:100%; max-width:1100px;
  display:flex; justify-content:space-between; align-items:center;
  z-index:10;
 }
-h1{font-size:3.4rem}
-h1 span{color:var(--accent)}
 
-.controls{display:flex; gap:12px}
+h1{ font-size:3.2rem; }
+h1 span{ color:var(--accent); text-shadow:0 0 20px var(--accent); }
+
+.controls{ display:flex; gap:10px; }
 .control{
- background:var(--glass); backdrop-filter:blur(14px);
- padding:10px 16px; border-radius:30px;
- cursor:pointer;
+ background:var(--glass); padding:10px 16px;
+ border-radius:30px; backdrop-filter:blur(14px); cursor:pointer;
 }
 
-.search-area{
- margin-top:40px; width:100%; max-width:700px;
- text-align:center; z-index:10;
-}
+.search-area{ margin-top:40px; width:100%; max-width:700px; text-align:center; z-index:10; }
 .search-box{
  display:flex; border-radius:60px; overflow:hidden;
  background:var(--glass); backdrop-filter:blur(18px);
  box-shadow:0 20px 60px rgba(0,0,0,.35);
 }
 input{
- flex:1; padding:22px 26px; font-size:1.1rem;
+ flex:1; padding:22px; font-size:1rem;
  border:none; outline:none; background:transparent; color:var(--text);
 }
-button{
- background:var(--accent); border:none;
- padding:0 26px; font-size:1.3rem; cursor:pointer;
+button{ border:none; cursor:pointer; }
+.search-btn{
+ background:linear-gradient(135deg,var(--accent),var(--accent2));
+ padding:0 25px; font-size:1.2rem;
 }
 
-.voice-btn{
- margin:22px auto 0;
- display:block;
- padding:16px 34px;
- border-radius:50px;
- background:linear-gradient(135deg,var(--accent),#00ffd5);
- cursor:pointer;
- box-shadow:0 15px 35px rgba(0,0,0,.35);
+#suggestions{ margin-top:6px; border-radius:12px; overflow:hidden; }
+#suggestions div{
+ background:var(--glass); padding:10px; cursor:pointer; backdrop-filter:blur(10px);
 }
+#suggestions div:hover{ background:var(--accent); color:#000; }
 
-.recommendations{
- margin-top:18px; display:flex; flex-wrap:wrap;
- gap:10px; justify-content:center; font-size:.85rem;
-}
-.recommendations button{
- background:rgba(255,255,255,.12);
- border:1px solid rgba(255,255,255,.2);
- color:var(--text);
- padding:8px 14px;
- border-radius:20px;
- cursor:pointer;
- backdrop-filter:blur(12px);
+#trending{ margin-top:20px; }
+#trending button{
+ margin:10px; padding:16px 26px; border-radius:24px;
+ font-size:1rem; background:rgba(255,255,255,.1);
+ border:1px solid rgba(255,255,255,.2); color:var(--text);
  transition:.25s;
 }
-.recommendations button:hover{
- background:var(--accent);
- color:#000;
- box-shadow:0 0 18px rgba(0,242,255,.8);
+#trending button:hover{
+ background:var(--accent); color:#000; box-shadow:0 0 18px var(--accent);
 }
 
-#results,#images{
- margin-top:45px; width:100%; max-width:1100px; z-index:10;
+.tab-control.active{
+ background:var(--accent); color:#000;
+ box-shadow:0 0 18px var(--accent);
+}
+
+#aiAnswer{
+ display:none; margin-top:30px; max-width:900px;
+ background:linear-gradient(145deg,rgba(0,255,200,.2),rgba(0,255,200,.05));
+ padding:26px; border-radius:22px; backdrop-filter:blur(20px);
 }
 
 .result{
- background:linear-gradient(145deg,rgba(255,255,255,.22),rgba(255,255,255,.05));
- backdrop-filter:blur(20px);
- border-radius:26px;
- padding:28px;
- margin-bottom:22px;
- box-shadow:0 30px 70px rgba(0,0,0,.45);
- opacity:0; transform:translateY(20px);
- animation:fadeUp .5s ease forwards;
+ background:linear-gradient(145deg,rgba(255,255,255,.2),rgba(255,255,255,.05));
+ backdrop-filter:blur(18px); border-radius:22px; padding:24px; margin-top:20px;
+ box-shadow:0 25px 60px rgba(0,0,0,.4); transition:.35s;
 }
-@keyframes fadeUp{to{opacity:1;transform:none}}
-
-.result h2{color:var(--accent); cursor:pointer}
-
-.badge{
- display:inline-block; margin-top:10px;
- background:rgba(0,0,0,.25);
- padding:4px 10px; border-radius:14px;
- font-size:.8rem;
+.result:hover{
+ transform:translateY(-5px);
+ box-shadow:0 30px 70px rgba(0,0,0,.6),0 0 18px var(--accent);
 }
+.result h2{ color:var(--accent); cursor:pointer; }
+.ai-btn{ margin-top:10px; background:transparent; border:1px solid var(--accent); color:var(--text); padding:6px 12px; border-radius:20px; }
 
-.ai-btn{
- margin-top:12px;
- background:transparent;
- border:1px solid var(--accent);
- color:var(--text);
- padding:8px 14px;
- border-radius:20px;
- cursor:pointer;
- font-size:.85rem;
-}
-
-mark{
- background:linear-gradient(135deg,rgba(0,242,255,.95),rgba(0,255,213,.95));
- color:#000; padding:2px 6px; border-radius:8px;
- font-weight:600;
- box-shadow:0 0 22px rgba(0,242,255,.9);
-}
+mark{ background:linear-gradient(135deg,#00ffd5,#6c8cff); color:#000; padding:2px 6px; border-radius:6px; }
 
 .image-grid{
- display:grid;
- grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
- gap:18px;
+ display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+ gap:18px; margin-top:30px;
 }
 .image-grid img{
- width:100%; height:180px; object-fit:cover;
- border-radius:18px; cursor:pointer;
- box-shadow:0 20px 40px rgba(0,0,0,.45);
- transition:.3s;
+ width:100%; height:180px; object-fit:cover; border-radius:14px; cursor:pointer;
 }
-.image-grid img:hover{
- transform:scale(1.05);
- box-shadow:0 0 30px rgba(0,242,255,.9);
+.preview{
+ position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+ background:#000; padding:20px; border-radius:14px; z-index:100;
 }
 
-/* 🔥 Smooth pulsing glow for active tabs */
-.control.active {
-  animation: glowPulse 2s infinite alternate;
+/* Focus Mode */
+body.focus-mode {
+  background:linear-gradient(135deg,#000010,#0b0b1f,#101020);
 }
-@keyframes glowPulse {
-  0% {
-    box-shadow:
-      0 0 12px rgba(0,242,255,0.6),
-      0 0 24px rgba(0,242,255,0.5),
-      0 0 36px rgba(0,255,213,0.4);
-  }
-  50% {
-    box-shadow:
-      0 0 18px rgba(0,242,255,0.9),
-      0 0 32px rgba(0,242,255,0.8),
-      0 0 48px rgba(0,255,213,0.7);
-  }
-  100% {
-    box-shadow:
-      0 0 22px rgba(0,242,255,1),
-      0 0 38px rgba(0,242,255,0.9),
-      0 0 56px rgba(0,255,213,0.8);
-  }
+body.focus-mode header,
+body.focus-mode footer,
+body.focus-mode #results,
+body.focus-mode #images {
+  opacity:0.2;
+  pointer-events:none;
+  transition:.4s;
+}
+body.focus-mode .search-area,
+body.focus-mode #trending {
+  opacity:1;
+  pointer-events:auto;
+  transform:scale(1.05);
+  transition:.4s;
 }
 
-footer{margin-top:auto; opacity:.6; z-index:10}
+footer{ margin-top:auto; opacity:.6; z-index:10; }
 </style>
 </head>
 
@@ -186,183 +152,197 @@ footer{margin-top:auto; opacity:.6; z-index:10}
 <canvas id="bg"></canvas>
 
 <header>
- <h1>Nova <span>Nexus</span></h1>
- <div class="controls">
-  <div class="control" onclick="toggleTheme()">🌙</div>
-  <div class="control" onclick="toggleFocus()">🎯 Focus</div>
- </div>
+<h1>Nova <span>Nexus</span></h1>
+<div class="controls">
+ <div class="control" onclick="toggleTheme()">🌙</div>
+ <div class="control" onclick="toggleFocus()">🎯</div>
+</div>
 </header>
 
-<p>Verified knowledge • AI summaries • Smart search</p>
-
 <div class="search-area">
- <div class="search-box">
-  <input id="query" placeholder="Search anything…" onkeydown="if(event.key==='Enter')search()">
-  <button onclick="search()">🔍</button>
- </div>
- <button class="voice-btn" onclick="voiceSearch()">🎤 Voice Search</button>
+<div class="search-box">
+<input id="query" placeholder="Search anything…" onkeydown="if(event.key==='Enter')search()">
+<button class="search-btn" onclick="search()">🔍</button>
+<button class="search-btn" onclick="voiceSearch()">🎤</button>
+</div>
+<div id="suggestions"></div>
 </div>
 
-<div class="recommendations">
- <button onclick="quickSearch('UEFA Champions League standing')">⚽ UCL</button>
- <button onclick="quickSearch('Premier League table')">🏆 PL</button>
- <button onclick="quickSearch('Artificial Intelligence')">🤖 AI</button>
- <button onclick="quickSearch('Space exploration')">🚀 Space</button>
+<div id="trending">
+🔥 Trending:<br>
+<button onclick="quickSearch('Artificial Intelligence')">AI</button>
+<button onclick="quickSearch('Premier League table')">Premier League</button>
+<button onclick="quickSearch('NASA Mars mission')">NASA</button>
+<button onclick="quickSearch('SpaceX launch')">SpaceX</button>
 </div>
 
-<!-- Tab Controls -->
+<!-- Tabs -->
 <div class="controls" style="margin-top:30px; z-index:10">
  <div class="control tab-control active" data-tab="search" onclick="setTab('search')">🔎 Search</div>
  <div class="control tab-control" data-tab="images" onclick="setTab('images')">🖼 Images</div>
 </div>
 
+<div id="aiAnswer"></div>
 <div id="results"></div>
 <div id="images" style="display:none"></div>
 
 <footer>Nova Nexus</footer>
 
 <script>
-let activeTab="search";
-
-function setTab(t){
- activeTab=t;
- const results=document.getElementById("results");
- const images=document.getElementById("images");
- if(results) results.style.display=t==="search"?"block":"none";
- if(images) images.style.display=t==="images"?"block":"none";
-
- // Glow active tab
- document.querySelectorAll(".tab-control").forEach(b=>{
-  b.classList.toggle("active", b.dataset.tab===t);
- });
-}
+let query=document.getElementById("query")
+let results=document.getElementById("results")
+let suggestions=document.getElementById("suggestions")
+let aiAnswer=document.getElementById("aiAnswer")
 
 function toggleTheme(){document.body.classList.toggle("light")}
 function toggleFocus(){document.body.classList.toggle("focus-mode")}
-function quickSearch(t){query.value=t;search()}
-
-function escapeRegex(s){return s.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");}
-
-function highlight(t,q){
- if(!q) return t;
- const safe=escapeRegex(q);
- return t.replace(new RegExp(`(${safe})`,"gi"),"<mark>$1</mark>");
-}
-
+function quickSearch(t){ query.value=t; search() }
+function highlight(t,q){ if(!q) return t; const safe=q.replace(/[.*+?^${}()|[\]\\]/g,"\\$&"); return t.replace(new RegExp(`(${safe})`,"gi"),"<mark>$1</mark>") }
 function redirectIfWebsite(q){
-    q=q.toLowerCase().trim();
-    if(q.includes(".") && !q.includes(" ")){
-        const url = q.startsWith("http") ? q : "https://" + q;
-        window.open(url, "_blank");
-        return true;
-    }
-    const sites={
-        youtube:"https://www.youtube.com",
-        google:"https://www.google.com",
-        github:"https://www.github.com",
-        twitter:"https://www.twitter.com",
-        openai:"https://www.openai.com"
-    };
-    if(sites[q]){window.open(sites[q],"_blank");return true;}
-    return false;
-}
-
-async function search(){
- const q=query.value.trim();
- if(!q) return;
- if(redirectIfWebsite(q)) return;
-
- if(activeTab==="images"){
-  imageSearch(q);
-  return;
+ q=q.toLowerCase().trim()
+ if((q.includes(".com")||q.includes(".net")||q.includes(".org")||q.includes(".io"))&&!q.includes(" ")){
+  const url=q.startsWith("http")?q:"https://"+q
+  window.open(url,"_blank"); return true
  }
+ return false
+}
 
- results.innerHTML="";
- const r=await fetch(`https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(q)}&format=json&origin=*`);
- const d=await r.json();
+function generateAnswer(q){
+ const lower=q.toLowerCase()
+ if(lower.startsWith("how")||lower.startsWith("what")||lower.startsWith("why")){
+  return `<h2>Quick Answer</h2><p><b>${q}</b></p>
+  <ol><li>Understand the core idea of the topic.</li>
+  <li>Follow the main principles or steps involved.</li>
+  <li>Practice or apply the concept.</li>
+  <li>Improve by learning more detailed techniques.</li></ol>`
+ }
+ return null
+}
 
+query.addEventListener("input", async()=>{
+ const q=query.value.trim()
+ if(!q){suggestions.innerHTML="";return}
+ const r=await fetch(`https://en.wikipedia.org/w/api.php?action=opensearch&search=${q}&limit=5&format=json&origin=*`)
+ const d=await r.json()
+ suggestions.innerHTML=""
+ d[1].forEach(s=>{
+  const div=document.createElement("div")
+  div.textContent=s
+  div.onclick=()=>{query.value=s; suggestions.innerHTML=""; search()}
+  suggestions.appendChild(div)
+ })
+})
+
+// Tabs
+let activeTab="search"
+function setTab(tab){
+ activeTab=tab
+ const images=document.getElementById("images")
+ if(tab==="search"){ results.style.display="block"; images.style.display="none" }
+ else{ results.style.display="none"; images.style.display="block" }
+ document.querySelectorAll(".tab-control").forEach(b=>b.classList.toggle("active",b.dataset.tab===tab))
+}
+
+// Search
+async function search(){
+ const q=query.value.trim()
+ if(!q) return
+ if(redirectIfWebsite(q)) return
+
+ if(activeTab==="images"){ imageSearch(q); return }
+
+ results.innerHTML="Loading..."
+ const answer=generateAnswer(q)
+ if(answer){ aiAnswer.style.display="block"; aiAnswer.innerHTML=answer }
+
+ const r=await fetch(`https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(q)}&format=json&origin=*`)
+ const d=await r.json()
+ results.innerHTML=""
  d.query.search.forEach(i=>{
-  const div=document.createElement("div");
-  div.className="result";
-  div.innerHTML=`
-   <h2>${i.title}</h2>
-   <p>${highlight(i.snippet.replace(/<[^>]+>/g,""),q)}...</p>
-   <button class="ai-btn">✨ AI Summary</button>
-   <span class="badge">Wikipedia</span>
-  `;
-  div.querySelector("h2").onclick=()=>loadFull(i.title,div,q);
-  div.querySelector(".ai-btn").onclick=e=>{e.stopPropagation();aiSummary(i.title,div,q)};
-  results.appendChild(div);
- });
+  const div=document.createElement("div")
+  div.className="result"
+  div.innerHTML=`<h2>${i.title}</h2><p>${highlight(i.snippet.replace(/<[^>]+>/g,""),q)}...</p><button class="ai-btn">✨ AI Summary</button>`
+  div.querySelector("h2").onclick=()=>loadFull(i.title,div,q)
+  div.querySelector(".ai-btn").onclick=()=>aiSummary(i.title,div,q)
+  results.appendChild(div)
+ })
 }
 
+// Full article
 async function loadFull(title,el,q){
- const r=await fetch(`https://en.wikipedia.org/w/api.php?action=query&prop=extracts&explaintext=1&titles=${encodeURIComponent(title)}&format=json&origin=*`);
- const d=await r.json();
- const page=Object.values(d.query.pages)[0];
- el.querySelector("p").innerHTML=highlight(page.extract,q);
- el.querySelector(".badge").textContent="Full Article";
+ const r=await fetch(`https://en.wikipedia.org/w/api.php?action=query&prop=extracts&explaintext=1&titles=${encodeURIComponent(title)}&format=json&origin=*`)
+ const d=await r.json()
+ const page=Object.values(d.query.pages)[0]
+ el.querySelector("p").innerHTML=highlight(page.extract,q)
 }
 
+// AI summary
 async function aiSummary(title,el,q){
- const r=await fetch(`https://en.wikipedia.org/w/api.php?action=query&prop=extracts&explaintext=1&titles=${encodeURIComponent(title)}&format=json&origin=*`);
- const d=await r.json();
- const text=Object.values(d.query.pages)[0].extract;
- el.querySelector("p").innerHTML=highlight(text.split(". ").slice(0,3).join(". ")+".",q);
- el.querySelector(".badge").textContent="AI Summary";
+ const r=await fetch(`https://en.wikipedia.org/w/api.php?action=query&prop=extracts&explaintext&titles=${encodeURIComponent(title)}&format=json&origin=*`)
+ const d=await r.json()
+ const text=Object.values(d.query.pages)[0].extract
+ el.querySelector("p").innerHTML=highlight(text.split(". ").slice(0,3).join(". ")+".",q)
 }
 
-async function imageSearch(q){
- images.innerHTML="";
- const r=await fetch(`https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(q)}&prop=pageimages&pithumbsize=400&format=json&origin=*`);
- const d=await r.json();
- if(!d.query) return;
-
- const grid=document.createElement("div");
- grid.className="image-grid";
- Object.values(d.query.pages).forEach(p=>{
-  if(!p.thumbnail) return;
-  const img=document.createElement("img");
-  img.src=p.thumbnail.source;
-  img.title=p.title;
-  grid.appendChild(img);
- });
- images.appendChild(grid);
-}
-
+// Voice search
 function voiceSearch(){
- if(!("webkitSpeechRecognition"in window))return alert("Voice not supported");
- const r=new webkitSpeechRecognition();
- r.start();
- r.onresult=e=>{query.value=e.results[0][0].transcript;search()};
+ if(!("webkitSpeechRecognition" in window)) return alert("Voice search not supported")
+ const r=new webkitSpeechRecognition()
+ r.start()
+ r.onresult=e=>{ query.value=e.results[0][0].transcript; search() }
+}
+
+// Image search
+async function imageSearch(q){
+ const images=document.getElementById("images")
+ images.innerHTML="Loading..."
+ const r=await fetch(`https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(q)}&prop=pageimages&pithumbsize=400&format=json&origin=*`)
+ const d=await r.json()
+ images.innerHTML=""
+ if(!d.query){ images.innerHTML="No images found."; return }
+ const grid=document.createElement("div")
+ grid.className="image-grid"
+ Object.values(d.query.pages).forEach(p=>{
+  if(!p.thumbnail) return
+  const img=document.createElement("img")
+  img.src=p.thumbnail.source
+  img.title=p.title
+  img.onclick=()=>{
+   const modal=document.createElement("div")
+   modal.className="preview"
+   modal.innerHTML=`<img src="${img.src}" style="max-width:80vw">`
+   document.body.appendChild(modal)
+   modal.onclick=()=>modal.remove()
+  }
+  grid.appendChild(img)
+ })
+ images.appendChild(grid)
 }
 
 // Particle background
-const c=document.getElementById("bg"),ctx=c.getContext("2d");
-function resize(){c.width=innerWidth;c.height=innerHeight}
-resize();addEventListener("resize",resize);
-const particles=[...Array(70)].map(()=>({
- x:Math.random()*c.width,y:Math.random()*c.height,
- r:2+Math.random()*2,
- dx:(Math.random()-.5)*.6,
- dy:(Math.random()-.5)*.6
-}));
-(function draw(){
- ctx.clearRect(0,0,c.width,c.height);
+const c=document.getElementById("bg")
+const ctx=c.getContext("2d")
+function resize(){ c.width=innerWidth; c.height=innerHeight }
+resize(); addEventListener("resize",resize)
+const particles=[...Array(70)].map(()=>({ x:Math.random()*c.width, y:Math.random()*c.height, r:2+Math.random()*2, dx:(Math.random()-.5)*.7, dy:(Math.random()-.5)*.7 }))
+function draw(){
+ ctx.clearRect(0,0,c.width,c.height)
  particles.forEach(p=>{
-  ctx.beginPath();
-  ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-  ctx.fillStyle="rgba(0,242,255,.6)";
-  ctx.shadowBlur=22;
-  ctx.shadowColor="rgba(0,242,255,.95)";
-  ctx.fill();
-  p.x+=p.dx;p.y+=p.dy;
-  if(p.x<0||p.x>c.width)p.dx*=-1;
-  if(p.y<0||p.y>c.height)p.dy*=-1;
- });
- requestAnimationFrame(draw);
-})();
+  ctx.beginPath()
+  ctx.arc(p.x,p.y,p.r,0,Math.PI*2)
+  ctx.fillStyle="rgba(0,255,213,.8)"
+  ctx.shadowBlur=20
+  ctx.shadowColor="rgba(0,255,213,1)"
+  ctx.fill()
+  p.x+=p.dx; p.y+=p.dy
+  if(p.x<0||p.x>c.width)p.dx*=-1
+  if(p.y<0||p.y>c.height)p.dy*=-1
+ })
+ requestAnimationFrame(draw)
+}
+draw()
 </script>
 </body>
+</html>
 </html>
 
